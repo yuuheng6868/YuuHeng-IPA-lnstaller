@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YuuHeng IPA Installer</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="YuuHeng">
+<meta name="theme-color" content="#050805">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #050805;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.app {
+    max-width: 480px;
+    margin: auto;
+}
+
+.header {
+    text-align: center;
+    padding: 30px 10px;
+    background: #101b10;
+    border: 1px solid #39ff14;
+    border-radius: 20px;
+    box-shadow: 0 0 20px #39ff1430;
+}
+
+h1 {
+    margin: 0;
+    color: #39ff14;
+    font-size: 36px;
+}
+
+.header p { letter-spacing: 3px; }
+
+.card {
+    margin-top: 20px;
+    padding: 20px;
+    background: #101510;
+    border: 1px solid #263826;
+    border-radius: 16px;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 12px;
+    background: #39ff14;
+    color: #001000;
+    border: 0;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+input[type="search"] {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #39ff14;
+    border-radius: 10px;
+    background: #080b08;
+    color: white;
+}
+
+.file {
+    padding: 14px;
+    margin-top: 10px;
+    background: #1a211a;
+    border-radius: 10px;
+    overflow-wrap: anywhere;
+}
+
+.note {
+    color: #aab5aa;
+    font-size: 13px;
+    line-height: 1.6;
+}
+</style>
+</head>
+
+<body>
+<main class="app">
+
+<header class="header">
+    <h1>YuuHeng</h1>
+    <p>IPA INSTALLER</p>
+    <small>YOUR IPA LIBRARY</small>
+</header>
+
+<section class="card">
+    <h2>📂 Import IPA</h2>
+    <p class="note">Select an IPA file from your device.</p>
+    <input id="ipaInput" type="file" accept=".ipa" multiple>
+    <button onclick="importIPA()">Import IPA</button>
+</section>
+
+<section class="card">
+    <h2>📦 App Library</h2>
+    <input id="search" type="search"
+           placeholder="Search IPA files..."
+           oninput="filterFiles()">
+    <div id="library">
+        <p class="note">No files imported yet.</p>
+    </div>
+</section>
+
+<section class="card">
+    <h3>⚙️ About</h3>
+    <p class="note">YuuHeng IPA Installer — Version 1.0</p>
+    <p class="note">
+        This prototype selects and lists IPA files.
+        It does not install iOS apps.
+    </p>
+</section>
+
+</main>
+
+<script>
+const files = [];
+
+function importIPA() {
+    const input = document.getElementById("ipaInput");
+
+    for (const file of input.files) {
+        if (!file.name.toLowerCase().endsWith(".ipa")) {
+            alert("Please select an IPA file.");
+            continue;
+        }
+
+        if (!files.some(f =>
+            f.name === file.name && f.size === file.size
+        )) {
+            files.push(file);
+        }
+    }
+
+    renderFiles();
+    input.value = "";
+}
+
+function renderFiles() {
+    const library = document.getElementById("library");
+    library.innerHTML = "";
+
+    if (files.length === 0) {
+        library.innerHTML =
+            '<p class="note">No files imported yet.</p>';
+        return;
+    }
+
+    for (const file of files) {
+        const item = document.createElement("div");
+        item.className = "file";
+        item.dataset.name = file.name.toLowerCase();
+
+        item.textContent = "📦 " + file.name + " — " +
+            (file.size / 1048576).toFixed(2) + " MB";
+
+        library.appendChild(item);
+    }
+
+    filterFiles();
+}
+
+function filterFiles() {
+    const query = document.getElementById("search")
+        .value.toLowerCase();
+
+    document.querySelectorAll(".file").forEach(item => {
+        item.style.display =
+            item.dataset.name.includes(query) ? "block" : "none";
+    });
+}
+</script>
+
+</body>
+</html>
